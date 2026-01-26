@@ -1,327 +1,245 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Login</title>
-<link rel="icon" type="image/png" href="/assets/logo.png">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-:root{
-  --bg:#f4f6f8;
-  --card:#ffffff;
-  --muted:#6b7280;
-  --text:#0f1724;
-  --accent:#06b6d4;
-  --hacker-accent: rgba(6, 182, 212, 0.06);
-  --error:#ef4444;
-  --radius:12px;
-  --glass: rgba(255,255,255,0.6);
-  --shadow: 0 8px 24px rgba(15,23,36,0.06);
-}
-html[data-theme="dark"]{
-  --bg:#0d1117;
-  --card:#161b22;
-  --muted:#8b949e;
-  --text:#e6edf3;
-  --accent:#00c4ff;
-  --hacker-accent: rgba(0, 196, 255, 0.08);
-  --error:#ff6b6b;
-  --glass: rgba(255,255,255,0.06);
-  --shadow: 0 8px 32px rgba(0,0,0,0.45);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eaglelasham</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Courier New", Courier, monospace;
+            background-color: #ffffff;
+            color: #000000;
+            transition: background-color 0.2s, color 0.2s;
+        }
 
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#e9eef2);font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--text); display:grid; place-items:center; padding:24px}
-html[data-theme="dark"], html[data-theme="dark"] body{
-  background:linear-gradient(180deg,#0d1117,#06080a);
-}
+        #top-bar {
+            border-bottom: 2px solid #000000;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+            background-color: #eeeeee;
+        }
 
-.wrap{
-  width:380px;
-  max-width:96%;
-  background:var(--card);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:36px 28px;
-  position:relative;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  align-items:stretch;
-}
+        .logo-container a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-container img {
+            height: 50px;
+            width: auto;
+            border: 1px solid #000;
+        }
 
-.wrap::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:6px;
-  background:linear-gradient(180deg, rgba(6,182,212,0.12), rgba(6,182,212,0.06));
-  border-top-left-radius:var(--radius);
-  border-bottom-left-radius:var(--radius);
-  pointer-events:none;
-  opacity:0.9;
-}
+        .site-title {
+            font-family: "Arial Black", "Impact", sans-serif;
+            font-size: 24px;
+            text-transform: uppercase;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
 
-.header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:6px;
-}
+        .menu-btn {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #000;
+            background: #ccc;
+        }
 
-.logo{
-  width:56px;
-  height:56px;
-  border-radius:10px;
-  object-fit:contain;
-  background:linear-gradient(180deg, rgba(6,182,212,0.06), transparent);
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 6px 18px rgba(6,182,212,0.04);
-}
+        .menu-btn div {
+            width: 25px;
+            height: 3px;
+            background-color: black;
+            margin: 3px 0;
+        }
 
-h2{
-  margin:0;
-  font-size:18px;
-  font-weight:600;
-  color:var(--text);
-}
+        .menu-btn:active {
+            background: #aaa;
+        }
 
-.lead{
-  margin:0;
-  font-size:13px;
-  color:var(--muted);
-}
+        #side-menu {
+            display: none;
+            position: fixed;
+            top: 82px;
+            right: 0;
+            width: 250px;
+            height: calc(100% - 82px);
+            background-color: #dddddd;
+            border-left: 2px solid #000000;
+            padding: 20px;
+            box-sizing: border-box;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 1000;
+        }
 
-form{display:flex;flex-direction:column;gap:10px;margin-top:2px}
+        #side-menu.active {
+            display: flex;
+        }
 
-.input{
-  width:100%;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
+        .theme-switch-container {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 2px solid #000;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-label{
-  font-size:12px;
-  color:var(--muted);
-}
+        .theme-toggle {
+            cursor: pointer;
+            background: #fff;
+            border: 2px solid #000;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+        }
 
-input{
-  width:100%;
-  padding:12px 14px;
-  border-radius:10px;
-  border:1px solid #e6e9ee;
-  background:transparent;
-  font-size:14px;
-  color:var(--text);
-  outline:none;
-  transition:box-shadow .15s ease, border-color .12s ease, transform .08s;
-}
+        .icon-sun, .icon-moon {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
 
-input::placeholder{color:rgba(15,23,36,0.35)}
+        .icon-moon {
+            display: none;
+        }
 
-input:focus{
-  border-color:var(--accent);
-  box-shadow:0 6px 20px rgba(6,182,212,0.08);
-  transform:translateY(-1px);
-}
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
 
-.actions{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+        body.dark-mode #top-bar {
+            background-color: #333333;
+            border-color: #ffffff;
+        }
 
-button{
-  padding:12px 14px;
-  border-radius:10px;
-  border:none;
-  background:linear-gradient(180deg,var(--accent), #0891b2);
-  color:white;
-  font-weight:600;
-  cursor:pointer;
-  font-size:14px;
-  box-shadow:0 8px 24px rgba(8,145,178,0.12);
-  transition:transform .08s, box-shadow .12s;
-}
+        body.dark-mode .menu-btn {
+            background-color: #555;
+            border-color: #fff;
+        }
 
-button:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(8,145,178,0.14)}
+        body.dark-mode .menu-btn div {
+            background-color: white;
+        }
 
-.meta{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:13px;
-  color:var(--muted);
-  gap:12px;
-}
+        body.dark-mode #side-menu {
+            background-color: #333;
+            border-color: #fff;
+        }
 
-a{color:var(--accent);text-decoration:none}
+        body.dark-mode .logo-container img {
+            border-color: #fff;
+        }
+        
+        body.dark-mode .theme-switch-container {
+            border-color: #fff;
+        }
 
-.error{
-  color:var(--error);
-  font-size:13px;
-  font-weight:600;
-  min-height:18px;
-  opacity:1;
-  transition:opacity .2s;
-}
+        body.dark-mode .theme-toggle {
+            background: #000;
+            color: #fff;
+            border-color: #fff;
+        }
 
-.hidden{opacity:0}
+        body.dark-mode .icon-sun {
+            display: none;
+        }
 
-.footer{
-  margin-top:6px;
-  display:flex;
-  justify-content:center;
-  font-size:13px;
-  color:var(--muted);
-  gap:8px;
-}
-
-.theme-toggle{
-  position:absolute;
-  bottom:16px;
-  left:16px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  cursor:pointer;
-  user-select:none;
-  font-size:14px;
-  padding:6px 10px;
-  border-radius:10px;
-  background:var(--card);
-  box-shadow:var(--shadow);
-  color:var(--text);
-}
-
-.icon{
-  width:20px;
-  height:20px;
-  display:inline-block;
-}
-
-.sun{
-  background:url('data:image/svg+xml;utf8,<svg fill="%23ffaa00" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><g stroke="%23ffaa00" stroke-width="2"><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.8" y2="4.2"/></g></svg>') center/contain no-repeat;
-}
-
-.moon{
-  background:url('data:image/svg+xml;utf8,<svg fill="%23cfcfcf" width="20" height="20" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 0111.21 3 7 7 0 1019 14.79 9 9 0 0121 12.79z"/></svg>') center/contain no-repeat;
-}
-
-@media (max-width:420px){
-  .wrap{padding:22px}
-  .logo{width:48px;height:48px}
-  h2{font-size:16px}
-  input,button{font-size:14px;padding:10px;border-radius:8px}
-}
-</style>
-
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-const supabase=createClient("https://thdzrkzdkdihjximoalb.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoZHpya3pka2RpaGp4aW1vYWxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNDkzNzIsImV4cCI6MjA3NTgyNTM3Mn0.uHpGricbNHVWsndClTd8K7LVRTCzWLF0ziwuGKvOSTw")
-
-function setCookie(n,v,d){document.cookie=n+"="+encodeURIComponent(v)+"; path=/; max-age="+(d*86400)}
-function getCookie(n){return document.cookie.split("; ").find(r=>r.startsWith(n+"="))?.split("=")[1]}
-
-let failCount=0
-let cooldown=false
-let timeoutId=null
-
-function showError(m){
-  const e=document.querySelector('.error')
-  e.textContent=m
-  e.classList.remove('hidden')
-  clearTimeout(timeoutId)
-  timeoutId=setTimeout(()=>e.classList.add('hidden'),5000)
-}
-
-async function handleLogin(e){
-  e.preventDefault()
-  if(cooldown){showError("Please wait before trying again.");return}
-  const u=document.getElementById('username').value.trim()
-  const p=document.getElementById('password').value
-  if(!u||!p){showError("Enter username & password");return}
-  const {data,error}=await supabase.from('users').select('id,username').eq('username',u).eq('password',p).maybeSingle()
-  if(error||!data){
-    failCount++
-    if(failCount>=5){
-      showError("Please try again later")
-      cooldown=true
-      let d=failCount>5?15000:10000
-      setTimeout(()=>cooldown=false,d)
-    } else showError("Invalid username or password")
-    return
-  }
-  setCookie('user',JSON.stringify({id:data.id,username:data.username}),7)
-  location.href='/home'
-}
-
-function applyTheme(t){
-  document.documentElement.setAttribute("data-theme",t)
-  setCookie("theme",t,365)
-  const i=document.getElementById("themeIcon")
-  const l=document.getElementById("themeLabel")
-  if(t==="dark"){
-    i.className="icon moon"
-    l.textContent="Dark"
-  } else {
-    i.className="icon sun"
-    l.textContent="Light"
-  }
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  if(document.cookie.split('; ').some(c=>c.startsWith('user='))) location.href='home.html'
-  document.getElementById('loginForm').addEventListener('submit',handleLogin)
-  const saved=getCookie("theme")||"light"
-  applyTheme(saved)
-  document.getElementById("themeToggle").addEventListener("click",()=>{
-    const t=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark"
-    applyTheme(t)
-  })
-})
-</script>
+        body.dark-mode .icon-moon {
+            display: block;
+        }
+    </style>
 </head>
-
 <body>
-  <div class="wrap" role="main">
-    <div class="header">
-      <img src="/assets/logo.png" alt="Logo" class="logo">
-      <div>
-        <h2>Sign in</h2>
-        <p class="lead">Access your account</p>
-      </div>
-    </div>
 
-    <form id="loginForm" novalidate>
-      <div class="input">
-        <label for="username">Username</label>
-        <input id="username" name="username" type="text" placeholder="Enter your username" required>
-      </div>
-
-      <div class="input">
-        <label for="password">Password</label>
-        <input id="password" name="password" type="password" placeholder="Enter your password" required>
-      </div>
-
-      <div class="actions">
-        <button type="submit">Sign in</button>
-        <div class="meta">
-          <span class="links">No account? <a href="/signup">Sign up</a></span>
+    <header id="top-bar">
+        <div class="logo-container">
+            <a href="index.html">
+                <img src="/assets/logo.png" alt="Logo">
+            </a>
         </div>
-      </div>
-    </form>
 
-    <p class="error hidden" aria-live="polite"></p>
+        <div class="site-title">Eaglelasham</div>
 
-    <div class="footer">Idawn™</div>
+        <div class="menu-btn" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </header>
 
-    <div class="theme-toggle" id="themeToggle">
-      <span id="themeIcon" class="icon sun"></span>
-      <span id="themeLabel">Light</span>
-    </div>
-  </div>
+    <nav id="side-menu">
+        <div class="menu-items">
+            <p><a href="#" style="color: inherit; text-decoration: none;">Home</a></p>
+            <p><a href="#" style="color: inherit; text-decoration: none;">About</a></p>
+            <p><a href="#" style="color: inherit; text-decoration: none;">Contact</a></p>
+        </div>
+
+        <div class="theme-switch-container">
+            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
+                <svg class="icon-sun" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg class="icon-moon" viewBox="0 0 24 24">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            menu.classList.toggle('active');
+        }
+
+        const body = document.body;
+        const savedTheme = localStorage.getItem('eaglelasham_theme');
+        
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+        }
+
+        function toggleTheme() {
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('eaglelasham_theme', 'light');
+            } else {
+                body.classList.add('dark-mode');
+                localStorage.setItem('eaglelasham_theme', 'dark');
+            }
+        }
+    </script>
+
 </body>
-</html>
+          </html>

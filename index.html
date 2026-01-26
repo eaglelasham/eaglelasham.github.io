@@ -3,173 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Eaglelasham - Home</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: "Courier New", Courier, monospace;
-            background-color: #ffffff;
-            color: #000000;
-            transition: background-color 0.2s, color 0.2s;
-        }
-
-        #top-bar {
-            border-bottom: 2px solid #000000;
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 60px;
-            background-color: #eeeeee;
-        }
-
-        .logo-container a {
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
+        /* CORE STYLES */
+        body { margin: 0; padding: 0; font-family: "Courier New", Courier, monospace; background-color: #ffffff; color: #000000; transition: background-color 0.2s, color 0.2s; }
+        a { color: inherit; }
         
-        .logo-container img {
-            height: 50px;
-            width: auto;
-            border: 1px solid #000;
-        }
-
-        .site-title {
-            font-family: "Arial Black", "Impact", sans-serif;
-            font-size: 24px;
-            text-transform: uppercase;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            pointer-events: none;
-        }
-
-        .menu-btn {
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #000;
-            background: #ccc;
-        }
-
-        .menu-btn div {
-            width: 25px;
-            height: 3px;
-            background-color: black;
-            margin: 3px 0;
-        }
-
-        .menu-btn:active {
-            background: #aaa;
-        }
-
-        #side-menu {
-            display: none;
-            position: fixed;
-            top: 82px;
-            right: 0;
-            width: 250px;
-            height: calc(100% - 82px);
-            background-color: #dddddd;
-            border-left: 2px solid #000000;
-            padding: 20px;
-            box-sizing: border-box;
-            flex-direction: column;
-            justify-content: space-between;
-            z-index: 1000;
-        }
-
-        #side-menu.active {
-            display: flex;
-        }
-
-        .theme-switch-container {
-            margin-top: auto;
-            padding-top: 20px;
-            border-top: 2px solid #000;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .theme-toggle {
-            cursor: pointer;
-            background: #fff;
-            border: 2px solid #000;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-        }
-
-        .icon-sun, .icon-moon {
-            width: 24px;
-            height: 24px;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .icon-moon {
-            display: none;
-        }
-
-        body.dark-mode {
-            background-color: #1a1a1a;
-            color: #ffffff;
-        }
-
-        body.dark-mode #top-bar {
-            background-color: #333333;
-            border-color: #ffffff;
-        }
-
-        body.dark-mode .menu-btn {
-            background-color: #555;
-            border-color: #fff;
-        }
-
-        body.dark-mode .menu-btn div {
-            background-color: white;
-        }
-
-        body.dark-mode #side-menu {
-            background-color: #333;
-            border-color: #fff;
-        }
-
-        body.dark-mode .logo-container img {
-            border-color: #fff;
-        }
+        /* HEADER */
+        #top-bar { border-bottom: 2px solid #000000; padding: 10px; display: flex; justify-content: space-between; align-items: center; height: 60px; background-color: #eeeeee; position: relative; z-index: 500; }
+        .logo-container a { text-decoration: none; display: flex; align-items: center; }
+        .logo-container img { height: 50px; width: auto; border: 1px solid #000; }
+        .site-title { font-family: "Arial Black", "Impact", sans-serif; font-size: 24px; text-transform: uppercase; position: absolute; left: 50%; transform: translateX(-50%); pointer-events: none; }
         
-        body.dark-mode .theme-switch-container {
-            border-color: #fff;
-        }
+        /* MENU BUTTON */
+        .menu-btn { cursor: pointer; width: 40px; height: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid #000; background: #ccc; }
+        .menu-btn div { width: 25px; height: 3px; background-color: black; margin: 3px 0; }
+        .menu-btn:active { background: #aaa; }
 
-        body.dark-mode .theme-toggle {
-            background: #000;
-            color: #fff;
-            border-color: #fff;
-        }
+        /* SIDE MENU */
+        #side-menu { display: none; position: fixed; top: 82px; right: 0; width: 250px; height: calc(100% - 82px); background-color: #dddddd; border-left: 2px solid #000000; padding: 20px; box-sizing: border-box; flex-direction: column; justify-content: space-between; z-index: 1000; }
+        #side-menu.active { display: flex; }
+        .menu-items p { font-size: 18px; font-weight: bold; border-bottom: 1px solid #999; padding-bottom: 10px; }
+        .menu-items a { text-decoration: none; display: block; }
+        .menu-items a:hover { text-decoration: underline; background-color: #ccc; }
 
-        body.dark-mode .icon-sun {
-            display: none;
-        }
+        /* THEME SWITCH */
+        .theme-switch-container { margin-top: auto; padding-top: 20px; border-top: 2px solid #000; text-align: center; display: flex; justify-content: center; }
+        .theme-toggle { cursor: pointer; background: #fff; border: 2px solid #000; padding: 8px; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; }
+        .icon-sun, .icon-moon { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .icon-moon { display: none; }
 
-        body.dark-mode .icon-moon {
-            display: block;
-        }
+        /* MAIN CONTENT AREA */
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        
+        /* PRODUCT GRID */
+        .product-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; }
+        .product-card { border: 2px solid #000; padding: 15px; background: #f9f9f9; text-align: center; }
+        .product-card img { width: 100%; height: 150px; object-fit: cover; border: 1px solid #000; margin-bottom: 10px; background: #ddd; }
+        .product-card h3 { margin: 10px 0; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 5px; }
+        .product-card .price { font-weight: bold; font-size: 1.2em; margin-bottom: 15px; display: block; }
+        .btn-buy { display: inline-block; background: #000; color: #fff; text-decoration: none; padding: 10px 20px; font-weight: bold; border: 2px solid #000; }
+        .btn-buy:hover { background: #fff; color: #000; }
+
+        /* DARK MODE */
+        body.dark-mode { background-color: #1a1a1a; color: #ffffff; }
+        body.dark-mode #top-bar { background-color: #333333; border-color: #ffffff; }
+        body.dark-mode .menu-btn { background-color: #555; border-color: #fff; }
+        body.dark-mode .menu-btn div { background-color: white; }
+        body.dark-mode #side-menu { background-color: #333; border-color: #fff; }
+        body.dark-mode .menu-items p { border-color: #555; }
+        body.dark-mode .menu-items a:hover { background-color: #444; }
+        body.dark-mode .product-card { background-color: #2a2a2a; border-color: #fff; }
+        body.dark-mode .product-card h3 { border-color: #fff; }
+        body.dark-mode .product-card img { border-color: #fff; background: #333; }
+        body.dark-mode .btn-buy { background: #fff; color: #000; border-color: #fff; }
+        body.dark-mode .btn-buy:hover { background: #000; color: #fff; }
+        body.dark-mode .theme-switch-container { border-color: #fff; }
+        body.dark-mode .theme-toggle { background: #000; color: #fff; border-color: #fff; }
+        body.dark-mode .icon-sun { display: none; }
+        body.dark-mode .icon-moon { display: block; }
+        body.dark-mode .logo-container img { border-color: #fff; }
     </style>
 </head>
 <body>
@@ -180,66 +73,75 @@
                 <img src="/assets/logo.png" alt="Logo">
             </a>
         </div>
-
         <div class="site-title">Eaglelasham</div>
-
         <div class="menu-btn" onclick="toggleMenu()">
-            <div></div>
-            <div></div>
-            <div></div>
+            <div></div><div></div><div></div>
         </div>
     </header>
 
     <nav id="side-menu">
         <div class="menu-items">
-            <p><a href="#" style="color: inherit; text-decoration: none;">Home</a></p>
-            <p><a href="#" style="color: inherit; text-decoration: none;">About</a></p>
-            <p><a href="#" style="color: inherit; text-decoration: none;">Contact</a></p>
+            <p><a href="index.html">Home</a></p>
+            <p><a href="about.html">About</a></p>
+            <p><a href="contact.html">Contact</a></p>
         </div>
-
         <div class="theme-switch-container">
-            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
-                <svg class="icon-sun" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-                <svg class="icon-moon" viewBox="0 0 24 24">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
+            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">
+                <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
             </button>
         </div>
     </nav>
 
-    <script>
-        function toggleMenu() {
-            const menu = document.getElementById('side-menu');
-            menu.classList.toggle('active');
-        }
+    <!-- PRODUCT LISTING -->
+    <div class="container">
+        <h1 style="border-bottom: 4px solid #000; padding-bottom: 10px;">AVAILABLE APPS</h1>
+        <p>Select a product to view details.</p>
 
+        <div class="product-list">
+            
+            <!-- PRODUCT 1 -->
+            <div class="product-card">
+                <img src="/assets/app1_preview.png" alt="App 1">
+                <h3>System Cleaner</h3>
+                <span class="price">$19.99</span>
+                <br>
+                <a href="/products/app1.html" class="btn-buy">VIEW PRODUCT</a>
+            </div>
+
+            <!-- PRODUCT 2 -->
+            <div class="product-card">
+                <img src="/assets/app2_preview.png" alt="App 2">
+                <h3>Data Shield</h3>
+                <span class="price">$29.99</span>
+                <br>
+                <a href="/products/app2.html" class="btn-buy">VIEW PRODUCT</a>
+            </div>
+
+            <!-- PRODUCT 3 -->
+            <div class="product-card">
+                <img src="/assets/app3_preview.png" alt="App 3">
+                <h3>Retro Editor</h3>
+                <span class="price">$9.99</span>
+                <br>
+                <a href="/products/app3.html" class="btn-buy">VIEW PRODUCT</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() { document.getElementById('side-menu').classList.toggle('active'); }
         const body = document.body;
         const savedTheme = localStorage.getItem('eaglelasham_theme');
-        
-        if (savedTheme === 'dark') {
-            body.classList.add('dark-mode');
-        }
-
+        if (savedTheme === 'dark') { body.classList.add('dark-mode'); }
         function toggleTheme() {
             if (body.classList.contains('dark-mode')) {
-                body.classList.remove('dark-mode');
-                localStorage.setItem('eaglelasham_theme', 'light');
+                body.classList.remove('dark-mode'); localStorage.setItem('eaglelasham_theme', 'light');
             } else {
-                body.classList.add('dark-mode');
-                localStorage.setItem('eaglelasham_theme', 'dark');
+                body.classList.add('dark-mode'); localStorage.setItem('eaglelasham_theme', 'dark');
             }
         }
     </script>
-
 </body>
-          </html>
+                                                              </html>

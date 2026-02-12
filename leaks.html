@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Home</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--bg:#000;--fg:lime;}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:monospace}
+  .top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.03)}
+  #homeLink{display:inline-block;text-decoration:none}
+  #logo{height:37px;width:auto;display:block}
+  .menu-btn{cursor:pointer;width:28px;height:20px;position:relative;border:none;background:transparent}
+  .menu-btn span,.menu-btn::before,.menu-btn::after{content:'';display:block;height:2px;width:100%;background:var(--fg);position:absolute;left:0;transition:.2s;}
+  .menu-btn span{top:9px;}
+  .menu-btn::before{top:0;}
+  .menu-btn::after{bottom:0;}
+  .sidebar{position:fixed;right:-260px;top:0;height:100%;width:260px;background:#050505;border-left:1px solid rgba(255,255,255,0.03);padding:16px;transition:right .3s ease;z-index:100;visibility:hidden;opacity:0;display:flex;flex-direction:column;justify-content:space-between;}
+  .sidebar.show{right:0;visibility:visible;opacity:1}
+  .sidebar-scroll{overflow-y:auto;flex-grow:1;margin-bottom:16px;}
+  .menu-links{display:flex;flex-direction:column;gap:12px;margin-top:20px;}
+  .menu-links a{border:1px solid var(--fg);border-radius:8px;padding:10px;text-align:center;text-decoration:none;color:var(--fg);transition:.2s;}
+  .menu-links a:hover{background:var(--fg);color:#000;}
+  .sidebar button{border:none;background:var(--fg);color:#000;cursor:pointer;padding:10px;border-radius:8px;width:100%;}
+  .overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:99}
+  .overlay.show{display:block}
+  .content{padding:24px;text-align:center; margin-bottom:40px;}
+  .welcome-box{border:1px solid var(--fg);padding:24px;margin:0 16px 16px 16px;border-radius:4px;height:calc(100vh - 64px - 32px - 24px);display:flex;flex-direction:column;}
+  .welcome-msg{margin:0;padding-bottom:12px;border-bottom:1px solid var(--fg);}
+  .extra-content{flex-grow:1;padding-top:12px;overflow-y:auto; display:flex; flex-direction:column;}
+  .thread-scroll{display:flex;flex-direction:column;gap:12px;margin-top:12px;overflow-y:auto;flex-grow:1;} 
+  .thread-item{padding:8px 12px;border:1px solid var(--fg);border-radius:6px;cursor:pointer;white-space:normal;}
+  .thread-item:hover{background:rgba(0,255,0,0.1);}
+  /* Floating Thread Menu */
+  #floatingThreadMenu{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#000;border:1px solid var(--fg);border-radius:8px;z-index:200;width:90%;max-width:500px;max-height:80%;overflow-y:auto;padding:16px;}
+  #floatingThreadMenu .title-box{border:1px solid var(--fg);padding:8px;margin-bottom:8px;}
+  #floatingThreadMenu .user-info{display:flex;justify-content:space-between;font-size:12px;color:lime;margin-bottom:8px;}
+  #floatingThreadMenu .content-box{border:1px solid var(--fg);padding:12px;min-height:200px;}
+  #closeThreadMenu{margin-top:12px;padding:6px 12px;border:1px solid var(--fg);border-radius:6px;background:transparent;color:var(--fg);cursor:pointer;}
+  footer{position:fixed;bottom:0;width:100%;text-align:center;font-size:13px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.03);}
+  footer a{color:var(--fg);margin:0 8px;text-decoration:none;}
+</style>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+const supabase = createClient(
+  "https://thdzrkzdkdihjximoalb.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoZHpya3pka2h4aW1vYWxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNDkzNzIsImV4cCI6MjA3NTgyNTM3Mn0.uHpGricbNHVWsndClTd8K7LVRTCzWLF0ziwuGKvOSTw"
+)
+
+function getCookie(name){
+  const c = document.cookie.split('; ').find(r=>r.startsWith(name+'='))
+  if(!c) return null
+  try{ return JSON.parse(decodeURIComponent(c.split('=')[1])) }catch(e){ return null }
+}
+function clearCookie(name){ document.cookie = name + '=; path=/; max-age=0' }
+
+let currentUser = null
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+  const user = getCookie('user')
+  if(!user) return location.href='index.html'
+  currentUser = user.username
+  document.getElementById('uname2').textContent = currentUser
+  document.getElementById('welcomeMsg').textContent = "Welcome Back, " + currentUser
+
+  const sidebar = document.getElementById('sidebar')
+  const overlay = document.getElementById('overlay')
+  const menuBtn = document.getElementById('menuBtn')
+
+  const toggleSidebar = show=>{
+    sidebar.classList.toggle('show', show)
+    overlay.classList.toggle('show', show)
+  }
+
+  menuBtn.addEventListener('click', ()=> toggleSidebar(!sidebar.classList.contains('show')))
+  overlay.addEventListener('click', ()=> toggleSidebar(false))
+  document.getElementById('logout').addEventListener('click', ()=>{
+    clearCookie('user')
+    location.href='index.html'
+  })
+
+  await renderThreads()
+
+  // Make Thread button
+  document.getElementById('makeThreadBtnTop').addEventListener('click', ()=>{
+    document.getElementById('threadTitle').value = ''
+    document.getElementById('threadContent').value = ''
+    document.getElementById('threadModal').style.display = 'block'
+  })
+  document.getElementById('cancelThread').addEventListener('click', ()=>{
+    document.getElementById('threadModal').style.display = 'none'
+  })
+  document.getElementById('submitThread').addEventListener('click', async ()=>{
+    const title = document.getElementById('threadTitle').value.trim()
+    const content = document.getElementById('threadContent').value.trim()
+    if(!title || !content){ alert('Title and content cannot be empty!'); return }
+    const { data, error } = await supabase.from('threads').insert([{ title, content, username: currentUser }])
+    if(error){ console.error(error); alert('Failed to create thread!'); return }
+    document.getElementById('threadModal').style.display = 'none'
+    await renderThreads()
+  })
+  document.getElementById('closeThreadMenu').addEventListener('click', ()=>{ document.getElementById('floatingThreadMenu').style.display='none'; })
+})
+
+async function fetchThreads(){
+  let { data, error } = await supabase.from('threads').select('*').order('created_at',{ascending:false})
+  if(error) console.error(error)
+  return data||[]
+}
+
+async function renderThreads(){
+  const extraContent = document.getElementById('extraContent')
+  extraContent.innerHTML = `
+    <button id="makeThreadBtnTop" style="padding:8px 12px;border:1px solid var(--fg);border-radius:6px;background:transparent;color:var(--fg);cursor:pointer;font-size:14px;">Make Thread</button>
+    <div class="thread-scroll" id="threadScroll"></div>
+  `
+  const threads = await fetchThreads()
+  const threadScroll = document.getElementById('threadScroll')
+  threadScroll.innerHTML = ''
+
+  if(!threads.length){
+    threadScroll.innerHTML='<div>No threads yet.</div>';
+    return
+  }
+
+  threads.forEach(t=>{
+    const div = document.createElement('div')
+    div.className = 'thread-item'
+    div.innerHTML = `<strong>${t.title || '(no title)'}</strong><br><small>@${t.username}</small>`
+    div.addEventListener('click', ()=>{
+      const floating = document.getElementById('floatingThreadMenu')
+      document.getElementById('threadTitleBox').textContent = t.title || '(no title)'
+      document.getElementById('threadUserInfo').textContent = `@${t.username} • ${new Date(t.created_at).toLocaleString()}`
+      document.getElementById('threadContentBox').textContent = t.content
+      floating.style.display = 'block'
+    })
+    threadScroll.appendChild(div)
+  })
+}
+</script>
+</head>
+<body>
+  <div class="top">
+    <a href="/home" id="homeLink" title="Home"><img id="logo" src="assets/logo.png" alt="Idawn Logo"></a>
+    <button id="menuBtn" class="menu-btn"><span></span></button>
+  </div>
+
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-scroll">
+      <div>Account</div>
+      <div style="margin-top:10px">Logged in as <strong id="uname2"></strong></div>
+      <div class="menu-links">
+        <a href="/livechat">Live Chat</a>
+        <a href="/leaks">Leaks</a>
+        <a href="/shop">Shop</a>
+      </div>
+    </div>
+    <button id="logout" style="margin-bottom:16px;">Log Out</button>
+  </div>
+
+  <div id="overlay" class="overlay"></div>
+
+  <div class="content">
+    <div class="welcome-box">
+      <p id="welcomeMsg" class="welcome-msg">Welcome Back</p>
+      <div class="extra-content" id="extraContent">
+        <!-- Make Thread button + vertical thread list injected -->
+      </div>
+    </div>
+  </div>
+
+  <!-- THREAD CREATION MODAL -->
+  <div id="threadModal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#000;border:1px solid var(--fg);padding:16px;z-index:200;border-radius:8px;width:90%;max-width:400px;">
+    <h3 style="margin-top:0;color:lime;">New Thread</h3>
+    <input type="text" id="threadTitle" placeholder="Title" style="width:100%;margin-bottom:8px;padding:8px;border-radius:4px;border:1px solid var(--fg);background:#111;color:lime;">
+    <textarea id="threadContent" placeholder="Content" style="width:100%;height:100px;padding:8px;border-radius:4px;border:1px solid var(--fg);background:#111;color:lime;"></textarea>
+    <div style="margin-top:8px;display:flex;justify-content:space-between;">
+      <button id="submitThread" style="flex:1;margin-right:4px;">Submit</button>
+      <button id="cancelThread" style="flex:1;margin-left:4px;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- FLOATING THREAD MENU -->
+  <div id="floatingThreadMenu">
+    <div class="title-box" id="threadTitleBox"></div>
+    <div class="user-info" id="threadUserInfo"></div>
+    <div class="content-box" id="threadContentBox"></div>
+    <button id="closeThreadMenu">Close</button>
+  </div>
+
+  <footer>
+    <a href="/contact">Contact</a> | Idawn™    
+  </footer>
+</body>
+</html>

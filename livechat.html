@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Chatroom</title>
+<title>Chatroom v3.1</title>
 <link rel="icon" type="image/png" href="/assets/logo.png">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
@@ -26,7 +26,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:
 footer{position:fixed;bottom:0;width:100%;text-align:center;font-size:13px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.03)}
 footer a{color:var(--fg);margin:0 8px;text-decoration:none}
 
-
+/* --- CHATBOX --- */
 #chatBox{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vh - 100px)}
 .chat-border{border:1px solid var(--fg);border-radius:12px;width:90%;max-width:800px;height:70vh;display:flex;flex-direction:column;overflow:hidden;background:#05050599;backdrop-filter:blur(2px)}
 #messages{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
     ws.onopen = () => {
       addMsg('system', 'Connected.')
-      
+      // join single channel
       ws.send(JSON.stringify({
         cmd: "join",
         channel: "idawn",
@@ -101,13 +101,13 @@ document.addEventListener('DOMContentLoaded', ()=> {
         const m = JSON.parse(e.data)
         if (!m.cmd) return
 
-        
+        // update live users list
         if (m.cmd === 'onlineSet') {
           users = m.nicks || []
           updateUserList()
         }
 
-        
+        // chat messages
         if (m.cmd === "chat") {
           addMsg(m.nick || 'anon', m.text || '', (m.nick || '') === uname)
         }
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
         <a href="/leaks">Leaks</a>
         <a href="/shop">Shop</a>
       </div>
-      
+      <!-- userList will be appended here -->
     </div>
     <button id="logout">Log Out</button>
   </div>

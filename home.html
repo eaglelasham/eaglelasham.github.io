@@ -95,21 +95,60 @@
   footer a{color:var(--fg);margin:0 8px;text-decoration:none}
 </style>
 
-<script>
+<script type="module">
+// 1. IMPORT SUPABASE EXACTLY LIKE YOUR LOGIN PAGE
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+const supabase = createClient("https://thdzrkzdkdihjximoalb.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoZHpya3pka2RpaGp4aW1vYWxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNDkzNzIsImV4cCI6MjA3NTgyNTM3Mn0.uHpGricbNHVWsndClTd8K7LVRTCzWLF0ziwuGKvOSTw")
+
+// Helper: Get Cookie
 function getCookie(name){
   const c = document.cookie.split('; ').find(r=>r.startsWith(name+'='))
   if(!c) return null
   try{ return JSON.parse(decodeURIComponent(c.split('=')[1])) }catch(e){ return null }
 }
+// Helper: Clear Cookie
 function clearCookie(name){ document.cookie = name + '=; path=/; max-age=0' }
 
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', async ()=>{
   const user = getCookie('user')
+  // If no user cookie, go back to login
   if(!user) return location.href='index.html'
 
+  // Update Username Display
   document.getElementById('uname2').textContent = user.username
   document.getElementById('welcomeMsg').textContent = "Welcome Back, " + user.username
 
+  // --- DASHBOARD BALANCE LOGIC ---
+  const extraContent = document.getElementById('extraContent');
+  
+  // 1. Inject the Dashboard HTML
+  extraContent.innerHTML = `
+    <div style="text-align: left; padding: 20px; border: 1px dashed var(--fg); background: rgba(0, 255, 0, 0.05);">
+        <div style="font-size: 1.2rem; margin-bottom: 10px;">Hello, ${user.username}.</div>
+        <div style="font-size: 0.8rem; color: #888; text-transform: uppercase;">Current Balance</div>
+        <div id="balanceDisplay" style="font-size: 2rem; font-weight: bold; margin-top: 5px;">Loading...</div>
+    </div>
+  `;
+
+  // 2. Fetch the Balance from Supabase
+  if(user.id) {
+    const { data, error } = await supabase
+      .from('balances')
+      .select('balance')
+      .eq('user_id', user.id)
+      .maybeSingle() // Use maybeSingle to avoid errors if empty
+
+    if(data) {
+        document.getElementById('balanceDisplay').textContent = parseFloat(data.balance).toFixed(8) + " BTC";
+    } else {
+        document.getElementById('balanceDisplay').textContent = "0.00000000 BTC";
+    }
+  } else {
+    document.getElementById('balanceDisplay').textContent = "0.00000000 BTC";
+  }
+  // --------------------------------
+
+  // --- SIDEBAR LOGIC (Kept Original) ---
   const sidebar = document.getElementById('sidebar')
   const overlay = document.getElementById('overlay')
   const menuBtn = document.getElementById('menuBtn')
@@ -153,7 +192,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     <div class="welcome-box">
       <p id="welcomeMsg" class="welcome-msg">Welcome Back</p>
       <div class="extra-content" id="extraContent">
-        <!-- Future content goes here -->
+        <!-- Dashboard will appear here -->
       </div>
     </div>
   </div>

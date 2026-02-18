@@ -85,9 +85,10 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
     ws.onopen = () => {
       addMsg('system', 'Connected.')
+      
       ws.send(JSON.stringify({
         cmd: "join",
-        channel: "?madebyeaglelasham",
+        channel: "eaglelasham",
         nick: uname
       }))
     }
@@ -103,7 +104,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
           users = m.nicks || []
           updateUserList()
         }
-
+        
         if (m.cmd === "chat") {
           addMsg(m.nick || 'anon', m.text || '', (m.nick || '') === uname)
         }

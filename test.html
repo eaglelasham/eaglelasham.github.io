@@ -5,6 +5,7 @@
 <link rel="icon" type="image/png" href="/assets/logo.png">
 <title>Home</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Supabase Library -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -73,13 +74,13 @@
   }
   .overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:99}
   .overlay.show{display:block}
-  .content{padding:24px;text-align:center; margin-bottom:40px;}
+  .content{padding:24px;text-align:center; margin-bottom:40px;} /* bottom gap for footer */
   .welcome-box{
     border:1px solid var(--fg);
     padding:24px;
     margin:0 16px 16px 16px;
     border-radius:4px;
-    height:calc(100vh - 64px - 32px - 24px);
+    height:calc(100vh - 64px - 32px - 24px); /* full height minus top bar, footer, padding */
     display:flex;
     flex-direction:column;
   }
@@ -92,26 +93,26 @@
     flex-grow:1;
     padding-top:12px;
     overflow-y:auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
   }
-  .dash-card {
-    border: 1px dashed var(--fg);
-    padding: 20px;
-    width: 100%;
-    max-width: 300px;
-  }
-  .dash-hello { font-size: 1.2rem; margin-bottom: 10px; }
-  .dash-balance-label { font-size: 0.8rem; color: #888; margin-top: 15px; }
-  .dash-balance-value { font-size: 1.8rem; font-weight: bold; }
-
-  footer{position:fixed;bottom:0;width:100%;text-align:center;font-size:13px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.03); background: #000;}
+  footer{position:fixed;bottom:0;width:100%;text-align:center;font-size:13px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.03)}
   footer a{color:var(--fg);margin:0 8px;text-decoration:none}
+
+  /* Dashboard Info Style */
+  .dash-info {
+    text-align: left;
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px dashed rgba(0, 255, 0, 0.3);
+  }
+  .dash-balance {
+    font-size: 24px;
+    margin-top: 10px;
+    color: var(--fg);
+  }
 </style>
 
 <script>
+// --- SUPABASE CONFIG ---
 const SB_URL = 'YOUR_SUPABASE_URL';
 const SB_KEY = 'YOUR_SUPABASE_ANON_KEY';
 const _supabase = supabase.createClient(SB_URL, SB_KEY);
@@ -119,42 +120,48 @@ const _supabase = supabase.createClient(SB_URL, SB_KEY);
 function getCookie(name){
   const c = document.cookie.split('; ').find(r=>r.startsWith(name+'='))
   if(!c) return null
-  try{ return JSON.parse(decodeURIComponent(c.split('=')[1])) }catch(e){ return null }
+  try{ 
+    const val = decodeURIComponent(c.split('=')[1]);
+    return JSON.parse(val);
+  } catch(e){ return null }
 }
 function clearCookie(name){ document.cookie = name + '=; path=/; max-age=0' }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
   const user = getCookie('user')
   if(!user) return location.href='index.html'
-  
+
+  // Username displays
   document.getElementById('uname2').textContent = user.username
   document.getElementById('welcomeMsg').textContent = "Welcome Back, " + user.username
-  document.getElementById('dashUser').textContent = user.username
+  document.getElementById('dashHello').textContent = "Hello, " + user.username + "."
 
-  async function getBalance() {
+  // Fetch Balance from Supabase
+  async function fetchUserBalance() {
     try {
       const { data, error } = await _supabase
         .from('balances')
         .select('balance')
-        .eq('user_id', user.id)
+        .eq('user_id', user.id) // Querying by user_id
         .single();
 
-      if (error) throw error;
-      if (data) {
-        document.getElementById('balanceVal').textContent = parseFloat(data.balance).toFixed(8) + " BTC";
+      if (error || !data) {
+        document.getElementById('userBalance').textContent = "0.00000000 BTC";
+      } else {
+        document.getElementById('userBalance').textContent = parseFloat(data.balance).toFixed(8) + " BTC";
       }
-    } catch (e) {
-      console.log("Balance fetch error:", e.message);
-      document.getElementById('balanceVal').textContent = "0.00000000 BTC";
+    } catch (err) {
+      document.getElementById('userBalance').textContent = "0.00000000 BTC";
     }
   }
 
-  getBalance();
+  fetchUserBalance();
 
   const sidebar = document.getElementById('sidebar')
   const overlay = document.getElementById('overlay')
   const menuBtn = document.getElementById('menuBtn')
 
+  // Sidebar Toggle Logic (Exactly as original)
   const toggleSidebar = show=>{
     sidebar.classList.toggle('show', show)
     overlay.classList.toggle('show', show)
@@ -194,14 +201,12 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     <div class="welcome-box">
       <p id="welcomeMsg" class="welcome-msg">Welcome Back</p>
       <div class="extra-content" id="extraContent">
-        
-        <!-- DASHBOARD AREA -->
-        <div class="dash-card">
-            <div class="dash-hello">Hello, <span id="dashUser"></span>.</div>
-            <div class="dash-balance-label">CURRENT BALANCE</div>
-            <div class="dash-balance-value" id="balanceVal">Loading...</div>
+        <!-- Dashboard Content -->
+        <div class="dash-info">
+            <div id="dashHello" style="font-size: 18px;">Hello.</div>
+            <div style="margin-top: 15px; font-size: 12px; color: #666;">CURRENT BALANCE</div>
+            <div id="userBalance" class="dash-balance">0.00000000 BTC</div>
         </div>
-
       </div>
     </div>
   </div>

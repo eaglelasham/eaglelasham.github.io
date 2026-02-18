@@ -5,7 +5,7 @@
 <link rel="icon" type="image/png" href="/assets/logo.png">
 <title>Home</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<!-- Supabase Library -->
+<!-- 1. SUPABASE LIBRARY -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -96,12 +96,25 @@
   }
   footer{position:fixed;bottom:0;width:100%;text-align:center;font-size:13px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.03)}
   footer a{color:var(--fg);margin:0 8px;text-decoration:none}
+
+  /* 2. DASHBOARD STYLE (Only affects the balance box) */
+  .dash-card {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px dashed var(--fg);
+    background: rgba(0, 255, 0, 0.05);
+    text-align: left;
+  }
+  .dash-hello { font-size: 1.1rem; margin-bottom: 10px; }
+  .dash-label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+  .dash-balance { font-size: 1.8rem; font-weight: bold; margin-top: 5px; color: var(--fg); }
+
 </style>
 
 <script>
-// --- SUPABASE CONFIG ---
-const SB_URL = 'YOUR_SUPABASE_URL';
-const SB_KEY = 'YOUR_SUPABASE_ANON_KEY';
+// --- 3. PASTE KEYS HERE ---
+const SB_URL = 'PASTE_YOUR_SUPABASE_URL_HERE';
+const SB_KEY = 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
 const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
 function getCookie(name){
@@ -111,42 +124,41 @@ function getCookie(name){
 }
 function clearCookie(name){ document.cookie = name + '=; path=/; max-age=0' }
 
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', async ()=>{
   const user = getCookie('user')
   if(!user) return location.href='index.html'
 
-  // YOUR ORIGINAL USERNAME LOGIC
   document.getElementById('uname2').textContent = user.username
   document.getElementById('welcomeMsg').textContent = "Welcome Back, " + user.username
 
-  // ADDING DASHBOARD CONTENT INTO Future Content AREA
-  document.getElementById('extraContent').innerHTML = `
-    <div style="text-align: left; margin-top: 20px; font-family: monospace;">
-        <div style="font-size: 18px;">Hello, ${user.username}.</div>
-        <div style="margin-top: 20px; font-size: 12px; color: #666;">CURRENT BALANCE</div>
-        <div id="balanceDisplay" style="font-size: 24px; color: lime; margin-top: 5px;">0.00000000 BTC</div>
-    </div>
-  `;
+  // --- 4. DASHBOARD LOGIC START ---
+  
+  // Set the "Hello" text
+  document.getElementById('dashName').textContent = user.username;
 
-  // FETCH BALANCE FROM SUPABASE
-  async function fetchBal() {
-    try {
-        const { data } = await _supabase
-            .from('balances')
-            .select('balance')
-            .eq('user_id', user.id)
-            .single();
-        
-        if (data && data.balance) {
-            document.getElementById('balanceDisplay').textContent = parseFloat(data.balance).toFixed(8) + " BTC";
-        }
-    } catch (e) {
-        // Keep it at 0.00000000 if error or empty
-    }
+  // Fetch Balance from your new 'balances' table
+  // We check if user.id exists in the cookie to avoid errors
+  if (user.id) {
+      try {
+          const { data, error } = await _supabase
+              .from('balances')
+              .select('balance')
+              .eq('user_id', user.id)
+              .single(); // Gets one row
+          
+          if (data) {
+              // If found, show it with 8 decimals
+              document.getElementById('dashBal').textContent = parseFloat(data.balance).toFixed(8) + " BTC";
+          } else {
+              // If no row exists yet, show 0
+              document.getElementById('dashBal').textContent = "0.00000000 BTC";
+          }
+      } catch (err) {
+          console.log("Supabase error:", err);
+      }
   }
-  fetchBal();
+  // --- DASHBOARD LOGIC END ---
 
-  // YOUR ORIGINAL SIDE MENU LOGIC
   const sidebar = document.getElementById('sidebar')
   const overlay = document.getElementById('overlay')
   const menuBtn = document.getElementById('menuBtn')
@@ -190,7 +202,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
     <div class="welcome-box">
       <p id="welcomeMsg" class="welcome-msg">Welcome Back</p>
       <div class="extra-content" id="extraContent">
-        <!-- Future content goes here -->
+        
+        <!-- 5. DASHBOARD HTML INSIDE CONTENT -->
+        <div class="dash-card">
+            <div class="dash-hello">Hello, <span id="dashName">User</span>.</div>
+            <div class="dash-label">Current Balance</div>
+            <div class="dash-balance" id="dashBal">0.00000000 BTC</div>
+        </div>
+
       </div>
     </div>
   </div>

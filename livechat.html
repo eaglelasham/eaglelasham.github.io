@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Chatroom v2</title>
+<title>Chatroom</title>
 <link rel="icon" type="image/png" href="/assets/logo.png">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
@@ -25,6 +25,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:
 .overlay.show{display:block}
 footer{position:fixed;bottom:0;width:100%;text-align:center;font-size:13px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.03)}
 footer a{color:var(--fg);margin:0 8px;text-decoration:none}
+
 
 #chatBox{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vh - 100px)}
 .chat-border{border:1px solid var(--fg);border-radius:12px;width:90%;max-width:800px;height:70vh;display:flex;flex-direction:column;overflow:hidden;background:#05050599;backdrop-filter:blur(2px)}
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
       
       ws.send(JSON.stringify({
         cmd: "join",
-        channel: "eaglelasham",
+        channel: "idawn",
         nick: uname
       }))
     }
@@ -100,10 +101,12 @@ document.addEventListener('DOMContentLoaded', ()=> {
         const m = JSON.parse(e.data)
         if (!m.cmd) return
 
+        
         if (m.cmd === 'onlineSet') {
           users = m.nicks || []
           updateUserList()
         }
+
         
         if (m.cmd === "chat") {
           addMsg(m.nick || 'anon', m.text || '', (m.nick || '') === uname)
@@ -156,6 +159,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
         <a href="/leaks">Leaks</a>
         <a href="/shop">Shop</a>
       </div>
+      
     </div>
     <button id="logout">Log Out</button>
   </div>

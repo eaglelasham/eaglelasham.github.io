@@ -115,6 +115,9 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   const user = getCookie('user')
   if(!user) return location.href='index.html'
 
+  document.getElementById('uname2').textContent = user.username
+  document.getElementById('welcomeMsg').textContent = "Welcome Back, " + user.username
+
   // --- DASHBOARD LAYOUT ---
   const extraContent = document.getElementById('extraContent');
   extraContent.innerHTML = `
@@ -130,10 +133,10 @@ document.addEventListener('DOMContentLoaded', async ()=>{
         </div>
 
         <div style="border-top: 1px solid rgba(0,255,0,0.2); padding-top: 10px;">
-            <!-- Chart Title and Price are now on the same line -->
             <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
                 <span style="font-size: 0.7rem; color: #888;">BTC MARKET (7D)</span>
-                <span id="currentBtcPrice" style="font-size: 1rem; font-weight: bold;">Loading...</span>
+                <!-- Current BTC Price is now styled as white -->
+                <span id="currentBtcPrice" style="font-size: 1rem; font-weight: bold; color: white;">Loading...</span>
             </div>
             <canvas id="btcChart" style="width:100%; height:150px;"></canvas>
         </div>
@@ -174,19 +177,15 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       document.getElementById('usdValue').textContent = `$${userUsdValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
       // Update Current BTC Price Text
-      const btcPriceEl = document.getElementById('currentBtcPrice');
-      btcPriceEl.textContent = `$${currentPrice.toLocaleString('en-US')}`;
+      document.getElementById('currentBtcPrice').textContent = `$${currentPrice.toLocaleString('en-US')}`;
       
-      // --- COLOR LOGIC (Based on 24h change) ---
-      let graphColor = '#00ff00'; // Lime (Default)
+      // COLOR LOGIC
+      let graphColor = '#00ff00';
       let graphBg = 'rgba(0, 255, 0, 0.05)';
-      
       if (priceChange24h < 0) {
-          graphColor = '#ff3333'; // Red
+          graphColor = '#ff3333';
           graphBg = 'rgba(255, 51, 51, 0.05)';
       }
-      // Apply color to the live price text
-      btcPriceEl.style.color = graphColor;
 
       // Draw Chart
       const prices = chartData.prices.map(item => item[1]);
@@ -209,7 +208,25 @@ document.addEventListener('DOMContentLoaded', async ()=>{
           },
           options: {
               responsive: true,
-              plugins: { legend: { display: false } },
+              plugins: { 
+                legend: { display: false },
+                // --- TOOLTIP CUSTOMIZATION ---
+                tooltip: {
+                  enabled: true,
+                  backgroundColor: 'rgba(0,0,0,0.9)',
+                  titleColor: '#aaa',
+                  bodyColor: 'lime',
+                  borderColor: '#333',
+                  borderWidth: 1,
+                  displayColors: false, // Hides the little color box
+                  callbacks: {
+                    label: function(context) {
+                      let value = context.raw || 0;
+                      return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    }
+                  }
+                }
+              },
               scales: {
                   x: { display: false },
                   y: { 
@@ -266,7 +283,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
 
   <div class="content">
     <div class="welcome-box">
-      <p id="welcomeMsg" class="welcome-msg">Welcome Back</p>
+      <p id="welcomeMsg" class="welcome-msg">Dashboard</p>
       <div class="extra-content" id="extraContent">
         <!-- Dashboard JS injects here -->
       </div>

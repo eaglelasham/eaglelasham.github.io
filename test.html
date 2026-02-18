@@ -96,19 +96,6 @@
   }
   footer{position:fixed;bottom:0;width:100%;text-align:center;font-size:13px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.03)}
   footer a{color:var(--fg);margin:0 8px;text-decoration:none}
-
-  /* Dashboard Info Style */
-  .dash-info {
-    text-align: left;
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px dashed rgba(0, 255, 0, 0.3);
-  }
-  .dash-balance {
-    font-size: 24px;
-    margin-top: 10px;
-    color: var(--fg);
-  }
 </style>
 
 <script>
@@ -120,48 +107,50 @@ const _supabase = supabase.createClient(SB_URL, SB_KEY);
 function getCookie(name){
   const c = document.cookie.split('; ').find(r=>r.startsWith(name+'='))
   if(!c) return null
-  try{ 
-    const val = decodeURIComponent(c.split('=')[1]);
-    return JSON.parse(val);
-  } catch(e){ return null }
+  try{ return JSON.parse(decodeURIComponent(c.split('=')[1])) }catch(e){ return null }
 }
 function clearCookie(name){ document.cookie = name + '=; path=/; max-age=0' }
 
-document.addEventListener('DOMContentLoaded', async ()=>{
+document.addEventListener('DOMContentLoaded', ()=>{
   const user = getCookie('user')
   if(!user) return location.href='index.html'
 
-  // Username displays
+  // YOUR ORIGINAL USERNAME LOGIC
   document.getElementById('uname2').textContent = user.username
   document.getElementById('welcomeMsg').textContent = "Welcome Back, " + user.username
-  document.getElementById('dashHello').textContent = "Hello, " + user.username + "."
 
-  // Fetch Balance from Supabase
-  async function fetchUserBalance() {
+  // ADDING DASHBOARD CONTENT INTO Future Content AREA
+  document.getElementById('extraContent').innerHTML = `
+    <div style="text-align: left; margin-top: 20px; font-family: monospace;">
+        <div style="font-size: 18px;">Hello, ${user.username}.</div>
+        <div style="margin-top: 20px; font-size: 12px; color: #666;">CURRENT BALANCE</div>
+        <div id="balanceDisplay" style="font-size: 24px; color: lime; margin-top: 5px;">0.00000000 BTC</div>
+    </div>
+  `;
+
+  // FETCH BALANCE FROM SUPABASE
+  async function fetchBal() {
     try {
-      const { data, error } = await _supabase
-        .from('balances')
-        .select('balance')
-        .eq('user_id', user.id) // Querying by user_id
-        .single();
-
-      if (error || !data) {
-        document.getElementById('userBalance').textContent = "0.00000000 BTC";
-      } else {
-        document.getElementById('userBalance').textContent = parseFloat(data.balance).toFixed(8) + " BTC";
-      }
-    } catch (err) {
-      document.getElementById('userBalance').textContent = "0.00000000 BTC";
+        const { data } = await _supabase
+            .from('balances')
+            .select('balance')
+            .eq('user_id', user.id)
+            .single();
+        
+        if (data && data.balance) {
+            document.getElementById('balanceDisplay').textContent = parseFloat(data.balance).toFixed(8) + " BTC";
+        }
+    } catch (e) {
+        // Keep it at 0.00000000 if error or empty
     }
   }
+  fetchBal();
 
-  fetchUserBalance();
-
+  // YOUR ORIGINAL SIDE MENU LOGIC
   const sidebar = document.getElementById('sidebar')
   const overlay = document.getElementById('overlay')
   const menuBtn = document.getElementById('menuBtn')
 
-  // Sidebar Toggle Logic (Exactly as original)
   const toggleSidebar = show=>{
     sidebar.classList.toggle('show', show)
     overlay.classList.toggle('show', show)
@@ -201,12 +190,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     <div class="welcome-box">
       <p id="welcomeMsg" class="welcome-msg">Welcome Back</p>
       <div class="extra-content" id="extraContent">
-        <!-- Dashboard Content -->
-        <div class="dash-info">
-            <div id="dashHello" style="font-size: 18px;">Hello.</div>
-            <div style="margin-top: 15px; font-size: 12px; color: #666;">CURRENT BALANCE</div>
-            <div id="userBalance" class="dash-balance">0.00000000 BTC</div>
-        </div>
+        <!-- Future content goes here -->
       </div>
     </div>
   </div>

@@ -122,11 +122,6 @@ extraContent.innerHTML = `
    <div style="text-align: left; padding: 20px; border: 1px dashed var(--fg); background: rgba(0, 255, 0, 0.05);">
         <div style="font-size: 1.2rem; margin-bottom: 10px;">Hello, ${user.username}.</div>
         <div style="font-size: 0.8rem; color: #888; text-transform: uppercase;">Current Balance</div>
-        <div id="balanceDisplay" style="font-size: 2rem; font-weight: bold; margin-top: 5px;">Loading...</div>
-        <div style="font-size: 1.2rem; margin-bottom: 5px;">Hello, ${user.username}.</div>
-        
-        <div style="font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 15px;">Wallet Balance</div>
-        
         <div style="margin-bottom: 20px; display: flex; align-items: baseline; flex-wrap: wrap;">
             <span id="balanceDisplay" style="font-size: 1.8rem; font-weight: bold; color:var(--fg);">0.00000000 BTC</span>
             <span style="color: #333; font-size: 1.8rem; margin: 0 10px; font-weight: 100;">|</span>
@@ -149,112 +144,80 @@ extraContent.innerHTML = `
 let currentBtcBalance = 0.0;
 
 if(user.id) {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('balances')
       .select('balance')
       .eq('user_id', user.id)
       .maybeSingle()
 
     if(data) {
-        document.getElementById('balanceDisplay').textContent = parseFloat(data.balance).toFixed(8) + " BTC";
-    } else {
-        document.getElementById('balanceDisplay').textContent = "0.00000000 BTC";
+        currentBtcBalance = parseFloat(data.balance);
+        document.getElementById('balanceDisplay').textContent = currentBtcBalance.toFixed(8) + " BTC";
     }
-  } else {
-    document.getElementById('balanceDisplay').textContent = "0.00000000 BTC";
-    try {
-        const { data } = await supabase
-        .from('balances')
-        .select('balance')
-        .eq('user_id', user.id)
-        .maybeSingle();
+}
 
-        if(data) {
-            currentBtcBalance = parseFloat(data.balance);
-            document.getElementById('balanceDisplay').textContent = currentBtcBalance.toFixed(8) + " BTC";
-        }
-    } catch(err) {}
-  }
+try {
+    const chartResponse = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7');
+    const chartData = await chartResponse.json();
+    
+    const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+    const priceData = await priceResponse.json();
 
-  try {
-      const chartResponse = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7');
-      const chartData = await chartResponse.json();
-      
-      const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
-      const priceData = await priceResponse.json();
+    const currentPrice = priceData.bitcoin.usd;
+    const priceChange24h = priceData.bitcoin.usd_24h_change;
 
-      const currentPrice = priceData.bitcoin.usd;
-      const priceChange24h = priceData.bitcoin.usd_24h_change;
+    const userUsdValue = currentBtcBalance * currentPrice;
+    document.getElementById('usdValue').textContent = `$${userUsdValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    document.getElementById('currentBtcPrice').textContent = `$${currentPrice.toLocaleString('en-US')}`;
+    
+    let graphColor = '#00ff00';
+    let graphBg = 'rgba(0, 255, 0, 0.05)';
+    const iconEl = document.getElementById('priceChangeIcon');
+    
+    iconEl.innerHTML = '▲';
+    iconEl.style.color = graphColor;
 
-      const userUsdValue = currentBtcBalance * currentPrice;
-      document.getElementById('usdValue').textContent = `$${userUsdValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (priceChange24h < 0) {
+        graphColor = '#ff3333';
+        graphBg = 'rgba(255, 51, 51, 0.05)';
+        iconEl.innerHTML = '▼';
+        iconEl.style.color = graphColor;
+    }
 
-      document.getElementById('currentBtcPrice').textContent = `$${currentPrice.toLocaleString('en-US')}`;
-      
-      let graphColor = '#00ff00';
-      let graphBg = 'rgba(0, 255, 0, 0.05)';
-      const iconEl = document.getElementById('priceChangeIcon');
-      
-      iconEl.innerHTML = '▲';
-      iconEl.style.color = graphColor;
-
-      if (priceChange24h < 0) {
-          graphColor = '#ff3333';
-          graphBg = 'rgba(255, 51, 51, 0.05)';
-          iconEl.innerHTML = '▼';
-          iconEl.style.color = graphColor;
-      }
-
-      const prices = chartData.prices.map(item => item[1]);
-      const labels = chartData.prices.map(item => new Date(item[0]).toLocaleDateString());
-      const ctx = document.getElementById('btcChart').getContext('2d');
-      new Chart(ctx, {
-          type: 'line',
-          data: {
-              labels: labels,
-              datasets: [{
-                  label: 'Price',
-                  data: prices,
-                  borderColor: graphColor, 
-                  borderWidth: 1,
-                  backgroundColor: graphBg,
-                  fill: true,
-                  pointRadius: 0,
-                  tension: 0.2
-              }]
-          },
-          options: {
-              responsive: true,
-              plugins: { 
-                legend: { display: false },
-                tooltip: {
-                  enabled: true,
-                  backgroundColor: 'rgba(0,0,0,0.9)',
-                  titleColor: '#aaa',
-                  bodyColor: 'lime',
-                  borderColor: '#333',
-                  borderWidth: 1,
-                  displayColors: false,
-                  callbacks: {
-                    label: function(context) {
-                      let value = context.raw || 0;
-                      return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    }
-                  }
+    const prices = chartData.prices.map(item => item[1]);
+    const labels = chartData.prices.map(item => new Date(item[0]).toLocaleDateString());
+    const ctx = document.getElementById('btcChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: prices,
+                borderColor: graphColor,
+                borderWidth: 1,
+                backgroundColor: graphBg,
+                fill: true,
+                pointRadius: 0,
+                tension: 0.2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { 
+              legend: { display: false }
+            },
+            scales: {
+                x: { display: false },
+                y: { 
+                    display: true, 
+                    grid: { color: 'rgba(255,255,255,0.03)' },
+                    ticks: { color: '#555', font: { family: 'monospace', size: 10 } }
                 }
-              },
-              scales: {
-                  x: { display: false },
-                  y: { 
-                      display: true, 
-                      grid: { color: 'rgba(255,255,255,0.03)' },
-                      ticks: { color: '#555', font: { family: 'monospace', size: 10 } }
-                  }
-              }
-          }
-      });
-  } catch (e) {
-      console.log("Chart Error", e);
+            }
+        }
+    });
+} catch (e) {
+    console.log("Chart Error", e);
 }
 
 const sidebar = document.getElementById('sidebar')
@@ -299,8 +262,7 @@ location.href='index.html'
 <div class="content">
 <div class="welcome-box">
 <p id="welcomeMsg" class="welcome-msg">Welcome Back</p>
-<div class="extra-content" id="extraContent">
-</div>
+<div class="extra-content" id="extraContent"></div>
 </div>
 </div>
 

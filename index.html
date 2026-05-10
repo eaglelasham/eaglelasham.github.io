@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mother's Day!</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  --cream: #fbf5ee;
+  --warm: #f5ece1;
+  --rose: #c97b6e;
+  --blush: #ebbcb1;
+  --deep: #3a2926;
+  --muted: #9e7b73;
+  --petal-a: #f2c4bb;
+  --petal-b: #f7dcd7;
+  --petal-c: #e8b0a4;
+}
+
+html {
+  background: var(--cream);
+}
+
+body {
+  background: var(--cream);
+  color: var(--deep);
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+.sky {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.leaf {
+  position: absolute;
+  top: -30px;
+  border-radius: 50% 0 50% 0;
+  opacity: 0;
+  animation: drifting linear infinite;
+}
+
+.leaf:nth-child(1)  { width: 10px; height: 16px; left: 8%;  background: var(--petal-a); animation-duration: 9s;  animation-delay: 0s;   }
+.leaf:nth-child(2)  { width: 8px;  height: 13px; left: 19%; background: var(--petal-b); animation-duration: 12s; animation-delay: 2.1s; }
+.leaf:nth-child(3)  { width: 12px; height: 18px; left: 33%; background: var(--petal-c); animation-duration: 8s;  animation-delay: 4.5s; }
+.leaf:nth-child(4)  { width: 9px;  height: 14px; left: 47%; background: var(--petal-a); animation-duration: 11s; animation-delay: 1s;   }
+.leaf:nth-child(5)  { width: 11px; height: 17px; left: 61%; background: var(--petal-b); animation-duration: 10s; animation-delay: 3.3s; }
+.leaf:nth-child(6)  { width: 8px;  height: 12px; left: 74%; background: var(--petal-c); animation-duration: 7s;  animation-delay: 6s;   }
+.leaf:nth-child(7)  { width: 13px; height: 19px; left: 87%; background: var(--petal-a); animation-duration: 9s;  animation-delay: 0.7s; }
+.leaf:nth-child(8)  { width: 7px;  height: 11px; left: 22%; background: var(--petal-b); animation-duration: 13s; animation-delay: 5s;   }
+.leaf:nth-child(9)  { width: 10px; height: 15px; left: 55%; background: var(--petal-c); animation-duration: 10s; animation-delay: 8s;   }
+.leaf:nth-child(10) { width: 9px;  height: 14px; left: 92%; background: var(--petal-a); animation-duration: 8s;  animation-delay: 2.8s; }
+
+@keyframes drifting {
+  0%   { transform: translateY(-30px) rotate(0deg)   translateX(0px);   opacity: 0; }
+  8%   { opacity: 0.75; }
+  85%  { opacity: 0.6; }
+  100% { transform: translateY(110vh) rotate(300deg) translateX(40px);   opacity: 0; }
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 48px 24px 72px;
+}
+
+.bouquet {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 4px;
+  margin-bottom: 36px;
+}
+
+.bud {
+  font-size: 26px;
+  display: block;
+  transform-origin: bottom center;
+  animation: budopen 1.8s cubic-bezier(.34,1.56,.64,1) both;
+  opacity: 0;
+}
+
+.bud:nth-child(1) { animation-delay: 0.1s; font-size: 22px; }
+.bud:nth-child(2) { animation-delay: 0.3s; font-size: 28px; }
+.bud:nth-child(3) { animation-delay: 0.5s; font-size: 34px; }
+.bud:nth-child(4) { animation-delay: 0.7s; font-size: 28px; }
+.bud:nth-child(5) { animation-delay: 0.9s; font-size: 22px; }
+
+@keyframes budopen {
+  0%   { opacity: 0; transform: scale(0.2) rotate(-25deg); }
+  60%  { opacity: 1; transform: scale(1.12) rotate(4deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.intro {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: slideup 1s ease 0.6s both;
+}
+
+.tag {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.hero-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--deep);
+  margin-bottom: 10px;
+}
+
+.hero-sub {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  line-height: 1.6;
+}
+
+@keyframes slideup {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.snapshot {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--warm);
+  position: relative;
+  margin-bottom: 40px;
+  box-shadow: 0 10px 50px rgba(201, 123, 110, 0.15);
+  animation: slideup 1s ease 0.9s both;
+}
+
+.snapshot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.snap-pill {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(251, 245, 238, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 6px 18px;
+  border-radius: 99px;
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+  white-space: nowrap;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.letter-block {
+  margin-bottom: 40px;
+  animation: slideup 1s ease 1.1s both;
+}
+
+.letter-head {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-style: italic;
+  color: var(--rose);
+  margin-bottom: 14px;
+}
+
+.letter-body {
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--deep);
+  font-weight: 300;
+}
+
+.split {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 34px 0;
+  animation: slideup 1s ease 1.2s both;
+}
+
+.split-bar {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--blush), transparent);
+}
+
+.split-bud {
+  font-size: 15px;
+}
+
+.reasons-block {
+  margin-bottom: 40px;
+  animation: slideup 1s ease 1.3s both;
+}
+
+.reasons-head {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--deep);
+  margin-bottom: 18px;
+}
+
+.card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px 16px;
+  margin-bottom: 10px;
+  border-left: 3px solid var(--blush);
+  box-shadow: 0 2px 14px rgba(201, 123, 110, 0.07);
+}
+
+.card-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  color: var(--blush);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.card-txt {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--deep);
+  padding-top: 4px;
+}
+
+.gift-area {
+  text-align: center;
+  padding: 10px 0 4px;
+  animation: slideup 1s ease 1.4s both;
+}
+
+.gift {
+  font-size: 66px;
+  display: block;
+  animation: giftpop 2.4s cubic-bezier(.36,.07,.19,.97) infinite;
+  transform-origin: bottom center;
+  cursor: default;
+  user-select: none;
+}
+
+@keyframes giftpop {
+  0%   { transform: translateY(0)    scale(1);    }
+  20%  { transform: translateY(-14px) scale(1.06); }
+  35%  { transform: translateY(0)    scale(0.97); }
+  50%  { transform: translateY(-6px)  scale(1.02); }
+  60%  { transform: translateY(0)    scale(1);    }
+  100% { transform: translateY(0)    scale(1);    }
+}
+
+.gift-caption {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 17px;
+  color: var(--muted);
+  margin-top: 12px;
+}
+
+.ribbon-wrap {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ribbon {
+  width: 6px;
+  height: 24px;
+  border-radius: 3px;
+  background: var(--blush);
+  animation: ribbondance 2s ease-in-out infinite;
+}
+
+.ribbon:nth-child(1) { animation-delay: 0s;    height: 20px; }
+.ribbon:nth-child(2) { animation-delay: 0.2s;  height: 28px; background: var(--petal-c); }
+.ribbon:nth-child(3) { animation-delay: 0.4s;  height: 22px; }
+.ribbon:nth-child(4) { animation-delay: 0.6s;  height: 26px; background: var(--petal-c); }
+.ribbon:nth-child(5) { animation-delay: 0.8s;  height: 20px; }
+
+@keyframes ribbondance {
+  0%, 100% { transform: scaleY(1) translateY(0); }
+  50%       { transform: scaleY(0.7) translateY(4px); }
+}
+
+.sign-block {
+  text-align: right;
+  margin-top: 40px;
+  animation: slideup 1s ease 1.5s both;
+}
+
+.sign-from {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.sign-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-style: italic;
+  color: var(--rose);
+  line-height: 1;
+}
+
+.foot-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 48px;
+  animation: slideup 1s ease 1.6s both;
+}
+
+.foot-bud {
+  font-size: 20px;
+  animation: floaty 3s ease-in-out infinite;
+}
+
+.foot-bud:nth-child(1) { animation-delay: 0s;    }
+.foot-bud:nth-child(2) { animation-delay: 0.25s; font-size: 24px; }
+.foot-bud:nth-child(3) { animation-delay: 0.5s;  }
+.foot-bud:nth-child(4) { animation-delay: 0.75s; font-size: 24px; }
+.foot-bud:nth-child(5) { animation-delay: 1s;    }
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0);   }
+  50%       { transform: translateY(-7px); }
+}
+</style>
+</head>
+<body>
+
+<div class="sky">
+  <div class="leaf"></div>
+  <div class="leaf"></div>
+  <div class="leaf"></div>
+  <div class="leaf"></div>
+  <div class="leaf"></div>
+  <div class="leaf"></div>
+  <div class="leaf"></div>
+  <div class="leaf"></div>
+  <div class="leaf"></div>
+  <div class="leaf"></div>
+</div>
+
+<div class="page">
+
+  <div class="bouquet">
+    <span class="bud">🌸</span>
+    <span class="bud">🌷</span>
+    <span class="bud">🌺</span>
+    <span class="bud">🌷</span>
+    <span class="bud">🌸</span>
+  </div>
+
+  <div class="intro">
+    <p class="tag">Happy Mother's Day</p>
+    <h1 class="hero-name">Pelita</h1>
+    <p class="hero-sub">The woman behind everything I am.</p>
+  </div>
+
+  <div class="snapshot">
+    <img src="assets/image1.png" alt="Me and Mum" />
+    <span class="snap-pill">you & me, always 🤍</span>
+  </div>
+
+  <div class="letter-block">
+    <p class="letter-head">Dear Mum,</p>
+    <p class="letter-body">here</p>
+  </div>
+
+  <div class="split">
+    <div class="split-bar"></div>
+    <span class="split-bud">🌸</span>
+    <div class="split-bar"></div>
+  </div>
+
+  <div class="reasons-block">
+    <p class="reasons-head">Why I love you —</p>
+
+    <div class="card">
+      <span class="card-num">01</span>
+      <span class="card-txt">Edit-Me</span>
+    </div>
+
+    <div class="card">
+      <span class="card-num">02</span>
+      <span class="card-txt">Edit-Me</span>
+    </div>
+
+    <div class="card">
+      <span class="card-num">03</span>
+      <span class="card-txt">Edit-Me</span>
+    </div>
+
+    <div class="card">
+      <span class="card-num">04</span>
+      <span class="card-txt">Edit-Me</span>
+    </div>
+  </div>
+
+  <div class="split">
+    <div class="split-bar"></div>
+    <span class="split-bud">🌷</span>
+    <div class="split-bar"></div>
+  </div>
+
+  <div class="gift-area">
+    <span class="gift">🎁</span>
+    <p class="gift-caption">This one's for you, Mum.</p>
+    <div class="ribbon-wrap">
+      <div class="ribbon"></div>
+      <div class="ribbon"></div>
+      <div class="ribbon"></div>
+      <div class="ribbon"></div>
+      <div class="ribbon"></div>
+    </div>
+  </div>
+
+  <div class="sign-block">
+    <p class="sign-from">With all my love,</p>
+    <p class="sign-name">Ermin. (Alias: Eaglelasham).</p>
+  </div>
+
+  <div class="foot-row">
+    <span class="foot-bud">🌸</span>
+    <span class="foot-bud">🌺</span>
+    <span class="foot-bud">🌹</span>
+    <span class="foot-bud">🌺</span>
+    <span class="foot-bud">🌸</span>
+  </div>
+
+</div>
+
+</body>
+  </html>
+  
